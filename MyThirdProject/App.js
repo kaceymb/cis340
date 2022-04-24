@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {Text , View, Button} from 'react-native';
 
 function TV(props) {
@@ -21,3 +21,12 @@ function TV(props) {
   );
 }
 
+export default function MultiTVs(){
+  return(
+    <View>
+    <TV name="LG"/>
+    <TV name="Sony"/>
+    </View>
+
+  );
+}
