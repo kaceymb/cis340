@@ -1,10 +1,13 @@
 import React, {useState} from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker'
+import * as Sharing from 'expo-sharing';
+import RCTSafeAreaViewNativeComponent from 'react-native/Libraries/Components/SafeAreaView/RCTSafeAreaViewNativeComponent';
 
 
 export default function App() {
 
+  const[selectedImage, setSelectedImage] = React.useState(null)
   let openImagePickerAsync = async () => {
     let permissionResult = await ImagePicker.requestCameraRollPermissionsAsync();
     if(permissionResult.granted === false){
@@ -12,7 +15,30 @@ export default function App() {
       return;
     }
     let pickerResult = await ImagePicker.launchImageLibraryAsync();
-    console.log(pickerResult);
+    if (pickerResult.cancelled == true) {
+      return;
+    }
+    setSelectedImage({localUri: pickerResult.uri})
+  };
+
+  let openSharingDialogAsync = async() => {
+        if (!(await Sharing.isAvailableAsync())){
+          alert('Sharing is not aviable on my phone');
+          return;
+        }
+        Sharing.shareAsync(selectedImage.localUri);
+  }
+
+  if (selectedImage !== null){
+   return(
+     <View style={styles.container}>
+       <Image source={{uri: selectedImage.localUri}} style={styles.selImage}/>
+     
+      <TouchableOpacity onPress={openSharingDialogAsync} style={styles.button}>
+      <Text style={styles.buttonText}>Share My Photo</Text>
+      </TouchableOpacity>
+     </View>
+   )
   }
 
 
@@ -63,5 +89,11 @@ const styles = StyleSheet.create({
   buttonText:{
     fontSize: 20,
     color:"#000000"
+  },
+
+  selImage: {
+    width: 300,
+    height: 300,
+    resizeMode: 'contain'
   }
 });
